@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>🎧 راديو مارس مباشر</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
     body {
       margin: 0;
@@ -83,10 +84,10 @@
 
   <div id="visit-counter">عدد الزيارات: 0</div>
 
-  <audio id="radio-mars" src="https://radiomars.ice.infomaniak.ch/radiomars-64.mp3"></audio>
+  <audio id="radio-mars" controls></audio>
 
   <script>
-    const radio = document.getElementById('radio-mars');
+    const audio = document.getElementById('radio-mars');
     const playBtn = document.getElementById('play-btn');
     const pauseBtn = document.getElementById('pause-btn');
     const volumeSlider = document.getElementById('volume-slider');
@@ -94,16 +95,31 @@
     const shareBtn = document.getElementById('share-btn');
     const visitCounter = document.getElementById('visit-counter');
 
-    // تشغيل
-    playBtn.addEventListener('click', () => { radio.play(); });
-    // إيقاف
-    pauseBtn.addEventListener('click', () => { radio.pause(); });
+    // رابط HLS (m3u8) لراديو مارس
+    const radioUrl = "https://radiomars.ice.infomaniak.ch/radiomars-64.mp3"; // MP3 مباشر
+    // لو كان m3u8: "https://radiomars.ice.infomaniak.ch/radiomars.m3u8"
+
+    // تشغيل HLS إذا كان م3u8
+    if(Hls.isSupported() && radioUrl.endsWith(".m3u8")) {
+      const hls = new Hls();
+      hls.loadSource(radioUrl);
+      hls.attachMedia(audio);
+    } else {
+      audio.src = radioUrl;
+    }
+
+    // تشغيل وإيقاف
+    playBtn.addEventListener('click', () => audio.play());
+    pauseBtn.addEventListener('click', () => audio.pause());
+
     // الصوت
-    volumeSlider.addEventListener('input', () => { radio.volume = volumeSlider.value; });
+    volumeSlider.addEventListener('input', () => { audio.volume = volumeSlider.value; });
+
     // التبرع
     donateBtn.addEventListener('click', () => {
       window.open('https://www.paypal.com/donate?business=tarikelmers2015@gmail.com', '_blank');
     });
+
     // المشاركة
     shareBtn.addEventListener('click', () => {
       if (navigator.share) {
@@ -117,7 +133,7 @@
       }
     });
 
-    // عداد زيارات (باستخدام localStorage)
+    // عداد زيارات
     let visits = localStorage.getItem('mars_visits');
     visits = visits ? parseInt(visits) + 1 : 1;
     localStorage.setItem('mars_visits', visits);
