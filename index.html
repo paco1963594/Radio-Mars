@@ -23,7 +23,7 @@
     #mars-logo {
       width: 300px;
       height: 300px;
-      background: url('https://upload.wikimedia.org/wikipedia/commons/7/7f/Radio_Mars_Logo.png') no-repeat center center;
+      background: url('https://i.imgur.com/2kKkmcD.png') no-repeat center center;
       background-size: contain;
       margin-bottom: 40px;
       animation: pulse 2s infinite;
@@ -39,15 +39,15 @@
 
     .controls {
       display: flex;
-      gap: 20px;
+      gap: 15px;
       margin-top: 20px;
       flex-wrap: wrap;
       justify-content: center;
     }
 
     button {
-      padding: 15px 25px;
-      font-size: 18px;
+      padding: 12px 20px;
+      font-size: 16px;
       font-weight: bold;
       border: none;
       border-radius: 12px;
@@ -68,6 +68,8 @@
     #volume-slider { width: 200px; margin-top: 15px; border-radius: 10px; }
 
     #visit-counter { margin-top: 20px; font-size: 18px; color: #FFD700; }
+
+    audio { display: none; }
   </style>
 </head>
 <body>
@@ -87,57 +89,58 @@
   <audio id="radio-mars" controls></audio>
 
   <script>
-    const audio = document.getElementById('radio-mars');
-    const playBtn = document.getElementById('play-btn');
-    const pauseBtn = document.getElementById('pause-btn');
-    const volumeSlider = document.getElementById('volume-slider');
-    const donateBtn = document.getElementById('donate-btn');
-    const shareBtn = document.getElementById('share-btn');
-    const visitCounter = document.getElementById('visit-counter');
+    document.addEventListener('DOMContentLoaded', () => {
+      const audio = document.getElementById('radio-mars');
+      const playBtn = document.getElementById('play-btn');
+      const pauseBtn = document.getElementById('pause-btn');
+      const volumeSlider = document.getElementById('volume-slider');
+      const donateBtn = document.getElementById('donate-btn');
+      const shareBtn = document.getElementById('share-btn');
+      const visitCounter = document.getElementById('visit-counter');
 
-    // رابط HLS (m3u8) لراديو مارس
-    const radioUrl = "https://radiomars.ice.infomaniak.ch/radiomars-64.mp3"; // MP3 مباشر
-    // لو كان m3u8: "https://radiomars.ice.infomaniak.ch/radiomars.m3u8"
+      // رابط MP3 مباشر لراديو مارس
+      const radioUrl = "https://radiomars.ice.infomaniak.ch/radiomars-64.mp3";
 
-    // تشغيل HLS إذا كان م3u8
-    if(Hls.isSupported() && radioUrl.endsWith(".m3u8")) {
-      const hls = new Hls();
-      hls.loadSource(radioUrl);
-      hls.attachMedia(audio);
-    } else {
-      audio.src = radioUrl;
-    }
-
-    // تشغيل وإيقاف
-    playBtn.addEventListener('click', () => audio.play());
-    pauseBtn.addEventListener('click', () => audio.pause());
-
-    // الصوت
-    volumeSlider.addEventListener('input', () => { audio.volume = volumeSlider.value; });
-
-    // التبرع
-    donateBtn.addEventListener('click', () => {
-      window.open('https://www.paypal.com/donate?business=tarikelmers2015@gmail.com', '_blank');
-    });
-
-    // المشاركة
-    shareBtn.addEventListener('click', () => {
-      if (navigator.share) {
-        navigator.share({
-          title: 'راديو مارس مباشر',
-          text: 'استمع مباشرة لراديو مارس!',
-          url: window.location.href
-        });
+      // تشغيل HLS إذا كان m3u8
+      if(Hls.isSupported() && radioUrl.endsWith(".m3u8")) {
+        const hls = new Hls();
+        hls.loadSource(radioUrl);
+        hls.attachMedia(audio);
       } else {
-        prompt('انسخ هذا الرابط وشاركه:', window.location.href);
+        audio.src = radioUrl;
       }
-    });
 
-    // عداد زيارات
-    let visits = localStorage.getItem('mars_visits');
-    visits = visits ? parseInt(visits) + 1 : 1;
-    localStorage.setItem('mars_visits', visits);
-    visitCounter.textContent = `عدد الزيارات: ${visits}`;
+      // أزرار تشغيل وإيقاف
+      playBtn.addEventListener('click', () => audio.play());
+      pauseBtn.addEventListener('click', () => audio.pause());
+
+      // تحكم في الصوت
+      volumeSlider.addEventListener('input', () => { audio.volume = volumeSlider.value; });
+
+      // زر التبرع بالبايبال
+      donateBtn.addEventListener('click', () => {
+        window.open('https://www.paypal.com/donate?business=tarikelmers2015@gmail.com', '_blank');
+      });
+
+      // زر المشاركة
+      shareBtn.addEventListener('click', () => {
+        if (navigator.share) {
+          navigator.share({
+            title: 'راديو مارس مباشر',
+            text: 'استمع مباشرة لراديو مارس!',
+            url: window.location.href
+          });
+        } else {
+          prompt('انسخ هذا الرابط وشاركه:', window.location.href);
+        }
+      });
+
+      // عداد زيارات
+      let visits = localStorage.getItem('mars_visits');
+      visits = visits ? parseInt(visits) + 1 : 1;
+      localStorage.setItem('mars_visits', visits);
+      visitCounter.textContent = `عدد الزيارات: ${visits}`;
+    });
   </script>
 
 </body>
